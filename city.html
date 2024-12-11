@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Aptos:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+
+
+    <title>Document</title>
+
+</head>
+
+<body>
+    <img id="background" src="/assets/img/RAIN.jpg" alt="">
+    <div class="parent">
+        <div class="side">
+            <div style="margin-top: auto; padding: 32px;">
+                <h3>
+                    <span id="current-city-temp">23º</span>
+                    <sup>c</sup>
+                </h3>
+                <h4 id="current-city-name">Mongu </h4>
+                <span class="conditions" id="current-city-conditions">T:10:30|H:30º L:15º</span>
+            </div>
+        </div>
+        <div class="side">
+            <div
+                style="backdrop-filter: blur(8px); border-radius: 16px;height: fit-content;padding: 16px; margin-block: 12px;">
+                <h4 style="font-size: 18px;">Hourly forcast</h4>
+                <hr style="margin-block: 8px; opacity: .5;">
+                <ul id="list-forcast-hour"
+                    style="display: flex; list-style: none; padding: 0px; gap: 16px; grid-row: 5;justify-content:space-between;">
+
+
+                </ul>
+
+            </div>
+            <div style="backdrop-filter: blur(8px); border-radius: 16px;height: fit-content;padding: 16px; ">
+                <h4 style="font-size: 18px;">5-Day Forcast</h4>
+                <hr style="margin-block: 8px; opacity: .5;">
+                <ul id="list-forcast-day"
+                    style="display: flex; padding: 0px; list-style: none; flex-direction: column; gap: 16px; grid-row: 5;">
+
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+    <footer>
+        <div alignn="middle">
+            <span class="copyright">Mongu. All Rights Reserved. Designed and Maintained By Kelvin Mukulwamutiyo,
+                SIN:
+                2310394913</span>
+        </div>
+    </footer>
+    <script>
+        // Retrieve data from localStorage
+        const weatherData = JSON.parse(localStorage.getItem('weatherData'));
+        let fivedayData;
+        //https://api.openweathermap.org/data/2.5/forecast?lat=-15.3875&lon=28.3228&units=metric&lang=en&appid=4827da2ee110c826d36b22650d3bd231 
+
+        //get hourly and darly forcast using the latitude and longtitude
+        const requestUrl = "https://api.openweathermap.org/data/2.5/forecast?lat=" + weatherData.coord.lat + "&lon=" + weatherData.coord.lon + "&units=metric&lang=en&appid=4827da2ee110c826d36b22650d3bd231"
+        fetch(requestUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`City not found: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                fivedayData = data;
+                // Call the function to display the weather
+                displayWeather();
+                displayHourlyWeather();
+            })
+            .catch(error => {
+                alert(`Error: ${error.message} `);
+            });
+
+
+
+        if (weatherData) {
+            displayWeatherData(weatherData);
+        } else {
+            document.getElementById('weatherInfo').innerHTML = '<p>No weather data found.</p>';
+        }
+
+        function displayWeatherData(data) {
+            document.getElementById("current-city-temp").textContent = data.main.temp + "º";
+            document.getElementById("current-city-name").textContent = data.name;
+            let time_in_milisec = data.dt;
+            let timezone = data.timezone;
+            //convert to milisec and create a date object
+            const utcTime = new Date(time_in_milisec * 1000);
+            //adjust time fir time zone offset
+            const localTime = new Date(utcTime.getHours() + timezone * 1000);
+            //format the time to a human readble string
+            const humanTime = localTime.getoLocaleString();
+            document.getElementById("current-city-conditions").textContent = "T:" + humanTime + " |   H:" + data.main.temp_max + "º | " + "L:" + data.main.temp_mini + "º";
+            console.log(humanTime + data.name)
+        }
+        // Format the date to display the day name (e.g., "Monday", "Tuesday", etc.)
+        function formatDateToDayName(timestamp) {
+            const date = new Date(timestamp * 1000); // Convert Unix timestamp to JavaScript Date object
+            const options = { weekday: 'long' }; // Display full weekday name (e.g., "Monday")
+            return date.toLocaleDateString('en-US', options); // Converts to full day name (e.g., "Monday")
+        }
+
+        // Get the weather forecast for each unique day
+        function getDailyWeather() {
+            const dailyWeather = [];
+
+            // Iterate through all forecast data to gather min/max temps for each day
+            fivedayData.list.forEach(entry => {
+                const dayName = formatDateToDayName(entry.dt); // Get the day name
+                const minTemp = entry.main.temp_min;
+                const maxTemp = entry.main.temp_max;
+                const weatherDescription = entry.weather[0].description;
+                const icon = entry.weather[0].icon; // Weather icon code
+
+                // Check if the day is already in the list, if not, add it
+                let existingDay = dailyWeather.find(day => day.dayName === dayName);
+                if (!existingDay) {
+                    // If it's a new day, add it to the list
+                    dailyWeather.push({
+                        dayName: dayName,
+                        minTemp: minTemp,
+                        maxTemp: maxTemp,
+                        weatherDescription: weatherDescription,
+                        icon: icon
+                    });
+                } else {
+                    // If the day is already present, update the min/max temperatures
+                    existingDay.minTemp = Math.min(existingDay.minTemp, minTemp);
+                    existingDay.maxTemp = Math.max(existingDay.maxTemp, maxTemp);
+                }
+            });
+
+            return dailyWeather;
+        }
+
+        // Display the weather forecast for each day
+        function displayWeather() {
+            const forecastList = document.getElementById("list-forcast-day");
+            const dailyWeather = getDailyWeather();
+
+            dailyWeather.forEach(day => {
+                const dayDiv = document.createElement("li");
+                dayDiv.classList.add("item-forcast-day");
+
+                // Create the day item with day name, icon, description, and min/max temps
+                dayDiv.innerHTML = `
+                <div>
+                    <span>${day.dayName}</span>
+                    <img src="https://openweathermap.org/img/wn/${day.icon}@2x.png" alt="${day.weatherDescription}">
+
+                </div>
+                <div >
+                    <p>Low: ${day.minTemp}°C</p>
+                    <p>High: ${day.maxTemp}°C</p>
+                </div>
+            `;
+
+                // Append the item to the forecast list
+                forecastList.appendChild(dayDiv);
+            });
+        }
+
+        // Get hourly forecast data for the current day
+        function getHourlyWeather() {
+            const hourlyWeather = [];
+            const currentDate = new Date(); // Get current date
+            const currentDateStr = currentDate.toISOString().split("T")[0]; // Get the current date in YYYY-MM-DD format
+
+            console.log("Current Date: " + currentDateStr); // Log current date for debugging
+
+            // Iterate through all forecast data to gather hourly forecast for the current day
+            fivedayData.list.forEach(entry => {
+                const entryDate = new Date(entry.dt * 1000); // Convert entry timestamp to date
+                const entryDateStr = entryDate.toISOString().split("T")[0]; // Get the date of the entry
+
+                console.log("Entry Date: " + entryDateStr); // Log each entry date for debugging
+
+                // Only include entries for today
+                if (entryDateStr === currentDateStr) {
+                    const hour = entryDate.getHours();
+                    const temp = entry.main.temp;
+                    const weatherDescription = entry.weather[0].description;
+                    const icon = entry.weather[0].icon; // Weather icon code
+
+                    hourlyWeather.push({
+                        hour: hour,
+                        temp: temp,
+                        weatherDescription: weatherDescription,
+                        icon: icon
+                    });
+                }
+            });
+
+            console.log("Hourly Weather: ", hourlyWeather); // Log the hourly weather array for debugging
+            return hourlyWeather;
+        }
+
+        // Display hourly weather for today
+        function displayHourlyWeather() {
+            const hourlyList = document.getElementById("list-forcast-hour");
+            const hourlyWeather = getHourlyWeather();
+
+            // If no hourly weather data exists
+            if (hourlyWeather.length === 0) {
+                hourlyList.innerHTML = "<li>No hourly forecast available</li>";
+                return;
+            }
+
+            console.log(hourlyWeather); // Log to check hourly data
+
+            // Loop through each hour and display the forecast
+            hourlyWeather.forEach(hourData => {
+                const hourDiv = document.createElement("li");
+                hourDiv.classList.add("item-forcast-hourly");
+
+                hourDiv.innerHTML = `
+            <span class="text-12">${hourData.hour}:00</span>
+            <img src="https://openweathermap.org/img/wn/${hourData.icon}@2x.png" alt="${hourData.weatherDescription}">
+            <span class="text-12">${hourData.temp}°C</span>
+        `;
+
+                hourlyList.appendChild(hourDiv);
+            });
+        }
+
+
+    </script>
+
+</body>
+
+</html>

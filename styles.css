@@ -1,0 +1,344 @@
+* {
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+
+    color: white;
+    font-family: 'Aptos', sans-serif;
+
+}
+
+.parent {
+    display: flex;
+    columns: 2;
+    width: 100%;
+
+    margin: auto;
+    aspect-ratio: 16/9;
+    margin: auto;
+    max-width: 1200px;
+
+
+
+}
+
+@media (mini-width:768px) {
+    .parent {
+        max-width: 768px;
+        min-width: 768px;
+    }
+}
+
+.side {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    padding: 24px;
+
+
+
+}
+
+#background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+
+}
+
+h3 {
+    font-size: 95px;
+}
+
+h4 {
+    font-size: 75px;
+}
+
+.conditions {
+    font-size: 35px;
+}
+
+.text-12 {
+    font: size 12px;
+
+}
+
+.item-forcast-hourly {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.item-forcast-hourly img {
+    height: 48px;
+    width: 48px;
+    object-fit: cover;
+    margin-inline: auto;
+
+}
+
+.item-forcast-day {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.item-forcast-day img {
+    height: 48px;
+    width: 48px;
+    object-fit: cover;
+
+}
+
+.item-forcast-day * {
+    width: 100%;
+    margin-inline: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+}
+
+* {
+    margin: 0;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-family: 'Aptos', sans-serif;
+    box-sizing: border-box;
+
+}
+
+#background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+
+
+}
+
+
+
+header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-inline: 16px;
+
+    backdrop-filter: blur(12px);
+    padding-block: 8px;
+    border-bottom: rgba(255, 255, 255, 0.242) 1px solid;
+
+
+}
+
+.searchbox {
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    border: 1px solid;
+    overflow: hidden;
+    width: 400px;
+    color: white;
+
+
+
+}
+
+input::placeholder {
+    color: white;
+    /* Change to your desired color */
+}
+
+/* Remove background on focus */
+input:focus {
+    background-color: transparent !important;
+    /* Remove background */
+    outline: none;
+    /* Optional: remove default outline */
+}
+
+/* Remove background on hover (optional) */
+input:hover {
+    background-color: transparent !important;
+}
+
+/* Remove background color when autofill is triggered (WebKit-based browsers) */
+input:-webkit-autofill {
+    background-color: transparent !important;
+    box-shadow: 0 0 0 30px transparent inset !important;
+    /* Remove shadow */
+    -webkit-text-fill-color: #000 !important;
+    /* Set the text color */
+}
+
+/* Optionally, reset any changes when input gets focus */
+input:-webkit-autofill:focus {
+    background-color: transparent !important;
+    box-shadow: 0 0 0 30px transparent inset !important;
+    -webkit-text-fill-color: #000 !important;
+}
+
+
+
+
+#cityInput {
+    display: flex;
+    background-color: transparent;
+    width: 100%;
+    min-height: 18px;
+    border: none;
+    color: white;
+    padding-inline: 16px;
+    outline: none;
+}
+
+.icon-button {
+    height: 48px;
+    width: 48px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.242);
+    border: none;
+    color: white;
+    border-radius: 999px;
+    cursor: pointer;
+
+}
+
+.search-button {
+
+    aspect-ratio: 1/1;
+    text-align: center;
+    background-color: transparent;
+    border: none;
+    color: white;
+
+    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.242);
+    cursor: pointer;
+
+}
+
+select {
+    font-size: 16px;
+    color: #333;
+    /* Color for selected option */
+    background-color: #f0f0f0;
+    /* Background color of the select */
+    cursor: pointer;
+}
+
+/* Styling for the dropdown options */
+select option {
+    color: #555;
+    /* Color for unselected options */
+    background-color: #ffffff;
+    /* Background color for options */
+}
+
+/* Optional: Change background color of selected option */
+select:focus {
+    outline: none;
+    background-color: #e0e0e0;
+}
+
+main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+}
+
+#savedCities {
+    margin-inline: auto;
+    backdrop-filter: blur(12px);
+    border: rgba(255, 255, 255, 0.242) 1px solid;
+    border-radius: 8px;
+    width: 400px;
+    margin-top: 120px;
+}
+
+.list-saved-cities {
+    list-style: none;
+    gap: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+
+}
+
+.item-saved-city {
+    padding-inline: 16px;
+    padding-block: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    cursor: pointer;
+
+}
+
+.item-saved-city:hover {
+    transition: all 300ms;
+    background-color: rgba(255, 255, 255, 0.242);
+
+}
+
+footer {
+    margin-top: 20px;
+    font-size: 12px;
+    margin-inline: auto;
+}
+
+footer ul {
+    list-style-type: none;
+    /* Remove bullet points */
+    padding: 0;
+    /* Remove padding */
+}
+
+footer ul li {
+    display: inline;
+    /* Display links in a single line */
+    margin: 0 10px;
+    /* Space between links */
+}
+
+footer div {
+    margin-top: 10px;
+    /* Space above footer text */
+}

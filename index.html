@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <title>weather app</title>
+
+
+
+
+</head>
+
+<body>
+    <img id="background" src="/assets/img/RAIN.jpg" alt="">
+    <header>
+        <button class="icon-button">
+            <select id="unitSelect" style="background-color: transparent;outline: none; border: none;color: white;">
+                <option value="metric">ºC</option>
+                <option value="imperial">ºF</option>
+            </select>
+
+        </button>
+        <div class="searchbox">
+            <input type="text" id="cityInput" placeholder="Enter city name" autocomplete="off" />
+            <button id="searchButton" class="search-button"> <i class="fas fa-search"></i></button>
+        </div>
+
+        <button id="saveCityButton" class="icon-button"> <i class="far fa-bookmark"></i></button>
+
+    </header>
+    <main>
+        <div id="savedCities">
+            <h5 style="padding-inline: 16px;padding-block: 8px;">
+                saved Cities
+            </h5>
+            <hr>
+            <ul id="list-saved-cities" class="list-saved-cities">
+            </ul>
+        </div>
+    </main>
+    <footer>
+        <div alignn="middle">
+            <span class="copyright">Mongu. All Rights Reserved. Designed and Maintained By Kelvin Mukulwamutiyo, SIN:
+                2310394913</span>
+        </div>
+    </footer>
+</body>
+<script>
+    const apiKey = '4827da2ee110c826d36b22650d3bd231';
+    const apiUrl = 'https://api.openweathermap.org/data/2.5/weather';
+    // Add event listener for the 'keydown' event
+    document.getElementById('cityInput').addEventListener('keydown', function (event) {
+        // Check if the 'Enter' key (key code 13) is pressed
+        if (event.key === 'Enter') {
+            fetchWeatherData(city);
+        }
+    });
+
+    document.getElementById('searchButton').addEventListener('click', function () {
+        const city = document.getElementById('cityInput').value;
+        if (city.trim() === '') {
+            alert('Please enter a city name.');
+            return;
+        }
+        fetchWeatherData(city);
+    });
+
+
+    function fetchWeatherData(city, unit = 'metric', language = 'en') {
+        const requestUrl = `${apiUrl}?q=${encodeURIComponent(city)}&units=${unit}&lang=${language}&appid=${apiKey}`;
+
+        fetch(requestUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`City not found: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                localStorage.setItem('weatherData', JSON.stringify(data));
+                localStorage.setItem('weatherapi', requestUrl);
+                window.location.href = 'city.html';
+            })
+            .catch(error => {
+                alert(`Error: ${error.message}`);
+            });
+    }
+
+
+    document.getElementById('saveCityButton').addEventListener('click', function () {
+        const city = document.getElementById('cityInput').value;
+        if (city.trim() !== '') {
+            saveCity(city);
+        }
+    });
+
+    function saveCity(city) {
+        let savedCities = JSON.parse(localStorage.getItem('savedCities')) || [];
+        if (!savedCities.includes(city)) {
+            savedCities.push(city);
+            localStorage.setItem('savedCities', JSON.stringify(savedCities));
+            displaySavedCities();
+        }
+    }
+
+    function displaySavedCities() {
+        const savedCities = JSON.parse(localStorage.getItem('savedCities')) || [];
+        const savedCitiesDiv = document.getElementById('list-saved-cities');
+        savedCitiesDiv.innerHTML = ""
+        savedCities.forEach(city => {
+            const cityElement = document.createElement('li');
+            cityElement.className = "item-saved-city";
+
+            cityElement.innerHTML = `
+                <i class="fas fa-bookmark"></i>
+                <span>${city}</span>    
+            `;
+
+            cityElement.addEventListener('click', function () {
+                fetchWeatherData(city);
+            });
+
+            savedCitiesDiv.appendChild(cityElement);
+        });
+    }
+
+
+    window.onload = function () {
+        displaySavedCities();
+    };
+</script>
+
+</html>
